@@ -1,8 +1,16 @@
 "use client";
 
 import * as React from "react";
+import { UserEditDialog } from "./edit-modal";
 
-import { Table, TableCell, TableHead, TableHeader, TableRow, TableBody } from "@/components/ui/table";
+import {
+  Table,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableBody,
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -47,9 +55,9 @@ export function UsersTable(props) {
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </TableHead>
-                <TableHead>Нармандах</TableHead>
-                <TableHead>Тэмүүлэн</TableHead>
-                <TableHead>boldoo@gmail.com</TableHead>
+                <TableHead>{item.firstname}</TableHead>
+                <TableHead>{item.lastname}</TableHead>
+                <TableHead>{item.email}</TableHead>
                 <TableHead className="w-1">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -60,10 +68,30 @@ export function UsersTable(props) {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => navigator.clipboard.writeText("temkanibno@gmail.com")}>Copy Email</DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          navigator.clipboard.writeText(item.email)
+                        }
+                      >
+                        Copy Email
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setEditModal(open);
+                        }}
+                      >
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={async () => {
+                          await fetch(`api/users/${item.id}`, {
+                            method: "DELETE",
+                          });
+                        }}
+                      >
+                        Delete
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableHead>
@@ -71,6 +99,7 @@ export function UsersTable(props) {
             ))}
           </TableBody>
         </Table>
+        <UserEditDialog item={null} open={editModalOpen} setCreate />
       </div>
     </div>
   );
