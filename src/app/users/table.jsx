@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { UserEditDialog } from "./edit-modal";
+import { useState } from "react";
+import { EditModal } from "./edit-modal";
 
 import {
   Table,
@@ -26,10 +28,21 @@ import { MoreHorizontal, Settings } from "lucide-react";
 
 export function UsersTable(props) {
   const { data } = props;
+  const [selectedItem, setSelectedItem] = useState();
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const filteredData = data?.filter((el) =>
+    el.firstname.toLowerCase().includes(search.toLowerCase())
+  );
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
-        <Input placeholder="Нэрээр хайх..." className="max-w-sm" />
+        <Input
+          placeholder="Нэрээр хайх..."
+          className="max-w-sm"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
       <div className="border rounded-md">
         <Table>
@@ -46,7 +59,7 @@ export function UsersTable(props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.slice(0, 10).map((item, index) => (
+            {filteredData?.map((item, index) => (
               <TableRow key={item.id}>
                 <TableCell>{index + 1}</TableCell>
                 <TableHead>
@@ -78,7 +91,8 @@ export function UsersTable(props) {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => {
-                          setEditModal(open);
+                          setSelectedItem(item);
+                          setEditModalOpen(true);
                         }}
                       >
                         Edit
@@ -99,7 +113,11 @@ export function UsersTable(props) {
             ))}
           </TableBody>
         </Table>
-        <UserEditDialog item={null} open={editModalOpen} setCreate />
+        <EditModal
+          open={editModalOpen}
+          item={selectedItem}
+          setCreateModalOpen={setEditModalOpen}
+        />
       </div>
     </div>
   );

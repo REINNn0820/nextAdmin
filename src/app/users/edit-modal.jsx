@@ -9,15 +9,15 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export const UserEditDialog = ({ open, onClose }) => {
+export const EditModal = ({ open, setCreateModalOpen, item }) => {
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const handleSubmit = async () => {
-    await fetch("/api/users", {
-      method: "POST",
+    await fetch("/api/users/" + item.id, {
+      method: "PUT",
       body: JSON.stringify({
         firstname: firstname,
         lastname: lastname,
@@ -25,11 +25,15 @@ export const UserEditDialog = ({ open, onClose }) => {
         imageUrl: "http://dummyimage.com/117x116.png/cc0000/ffffff",
       }),
     });
-    onClose(false);
+    setCreateModalOpen(false);
   };
-
+  useEffect(() => {
+    setFirstName(item?.firstname);
+    setLastName(item?.lastname);
+    setEmail(item?.email);
+  }, [item]);
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={setCreateModalOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create user</DialogTitle>
@@ -62,7 +66,7 @@ export const UserEditDialog = ({ open, onClose }) => {
         </div>
         <DialogFooter>
           <Button
-            onClick={() => onClose(false)}
+            onClick={() => setCreateModalOpen(false)}
             variant="outline"
             type="button"
           >
